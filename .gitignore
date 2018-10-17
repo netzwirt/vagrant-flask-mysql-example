@@ -1,0 +1,4 @@
+/.settings/
+/.vagrant/
+/.mysqlpwd*
+/.secret_key

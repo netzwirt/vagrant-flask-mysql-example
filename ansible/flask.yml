@@ -1,0 +1,54 @@
+---
+
+- hosts: all
+  become: true
+
+  vars:
+    flask_user: flask
+
+  tasks:
+  
+  - name: generate flask password for mysql and secret_key
+    set_fact: 
+      mysql_passord_flask: "{{ lookup('password', inventory_dir + '/../../../../.mysqlpwd_flask length=12 chars=ascii_letters,digits,hexdigits') }}"
+      secret_key: "{{ lookup('password', inventory_dir + '/../../../../.secret_key length=32') }}"
+    
+
+  - name: generate app config
+    template: 
+      src: flask/config.py.j2
+      dest: "/home/{{ flask_user }}/base/config.py"
+      mode: 0400
+
+
+  - name: create database 'flask'
+    mysql_db:
+      name: flask
+      state: present
+    
+    
+  - name: add user flask
+    mysql_user:
+      name: flask
+      password: "{{ mysql_passord_flask }}"
+      priv: 'flask.*:ALL'
+      state: present  
+
+
+  - name: prepare migrations
+    shell: 'cd /home/flask/base/ && . venv/bin/activate && export APP_SETTINGS="config.DevelopmentConfig" && flask db init'
+    args:
+      creates: "/home/flask/base/migrations/alembic.ini"
+      
+
+  - name: create 1st migration for messages
+    shell: 'cd /home/flask/base/ && . venv/bin/activate && export APP_SETTINGS="config.DevelopmentConfig" && flask db migrate -m "messages table"'
+    args:
+      creates: "/home/flask/base/migrations/versions/*_table.py"
+
+
+  - name: update db
+    shell: 'cd /home/flask/base/ && . venv/bin/activate && export APP_SETTINGS="config.DevelopmentConfig" && flask db upgrade'
+    args:
+      creates: "/home/flask/base/migrations/versions/*_table.py"
+

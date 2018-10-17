@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  become: true
+
+  tasks:
+   
+  - name: install debconf-utils
+    apt: 
+      name: debconf-utils
+      state: present
+  
+  
+  - name: generate root password for mysql
+    set_fact: 
+      mysql_passord_root: "{{ lookup('password', inventory_dir + '/../../../../.mysqlpwd_root length=12 chars=ascii_letters,digits,hexdigits') }}"    
+
+
+  - name: generate client config
+    template: 
+      src: mysql/my.cnf.j2
+      dest: /root/.my.cnf
+      owner: root 
+      group: root
+      mode: 0400
+  
+  
+  - name: preseed password
+    debconf: 
+      name: mysql-server
+      question: "{{ item }}"
+      vtype: password 
+      value: "{{ mysql_passord_root }}"
+    with_items:
+    - mysql-server/root_password
+    - mysql-server/root_password_again
+    changed_when: False
+  
+  
+  - name: install mysql-server
+    apt: 
+      name: mysql-server
+      state: present
+    

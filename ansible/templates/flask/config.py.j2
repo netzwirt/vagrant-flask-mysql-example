@@ -1,0 +1,22 @@
+# -*- coding: utf-8 -*-
+
+import os
+basedir = os.path.abspath(os.path.dirname(__file__))
+
+class Config(object):
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SECRET_KEY: "{{ secret_key }}"
+
+
+class ProductionConfig(Config):
+    SQLALCHEMY_DATABASE_URI = ""
+    ENV = "production"
+    
+
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = "mysql://flask:{{ mysql_passord_flask }}@localhost/flask"
+    ENV = "development"
+

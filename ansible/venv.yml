@@ -1,0 +1,60 @@
+---
+
+- hosts: all
+  become: true
+
+  vars:
+    flask_user: flask
+
+  tasks:
+  
+  - name: create project user
+    user:
+      name: "{{ flask_user }}"
+      state: present
+      shell: /bin/bash
+
+
+  - name: create project folder
+    file:
+      path: "/home/{{ flask_user }}/base/app"
+      state: directory
+
+
+  - name: install packages
+    apt:
+      state: present
+      name: "{{ item }}"
+    with_items:
+    - python3-venv
+    
+    
+  - name: create virtualenv
+    command: "python3 -m venv /home/{{ flask_user }}/base/venv"
+    args:
+      creates: "/home/{{ flask_user }}/base/venv"
+
+    
+  - name: install modules a virtualenv
+    pip:
+      requirements: "/home/{{ flask_user }}/base/requirements.txt"
+      virtualenv: "/home/{{ flask_user }}/base/venv"
+      virtualenv_python: "python3"
+
+
+  - name: install python3-mysqldb
+    apt: 
+      name: python3-mysqldb
+      state: present
+
+
+  - name: mysql driver hack
+    command: "cp -ar {{ item }} /home/{{ flask_user }}/base/venv/lib/python3.6/site-packages/"
+    with_items:
+    - "/usr/lib/python3/dist-packages/_mysql_exceptions.py"    
+    - "/usr/lib/python3/dist-packages/_mysql.cpython-36m-x86_64-linux-gnu.so"
+    - "/usr/lib/python3/dist-packages/MySQLdb"
+    args:
+      creates:  "/home/{{ flask_user }}/base/venv/lib/python3.6/site-packages/{{ item.split('/').pop() }}"
+  
+
