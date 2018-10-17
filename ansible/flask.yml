@@ -50,5 +50,4 @@
   - name: update db
     shell: 'cd /home/flask/base/ && . venv/bin/activate && export APP_SETTINGS="config.DevelopmentConfig" && flask db upgrade'
     args:
-      creates: "/home/flask/base/migrations/versions/*_table.py"
 
