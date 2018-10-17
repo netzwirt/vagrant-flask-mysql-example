@@ -21,7 +21,7 @@ def comment():
     if form.validate_on_submit():
         
         # save the data
-        m = Message( email=form.email.data, message=form.message.data, date=datetime.date.today())
+        m = Message( email=form.email.data, message=form.message.data, date=datetime.datetime.now())
         db.session.add(m)
         db.session.commit()
         
