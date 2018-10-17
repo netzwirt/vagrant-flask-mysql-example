@@ -17,6 +17,6 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = "mysql://flask:{{ mysql_passord_flask }}@localhost/flask"
+    SQLALCHEMY_DATABASE_URI = "mysql+pymysql://flask:{{ mysql_passord_flask }}@localhost/flask"
     ENV = "development"
 

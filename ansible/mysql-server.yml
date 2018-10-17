@@ -41,4 +41,10 @@
     apt: 
       name: mysql-server
       state: present
+
+
+  - name: install python3-mysqldb
+    apt: 
+      name: python3-mysqldb
+      state: present
     
