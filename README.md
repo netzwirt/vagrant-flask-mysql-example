@@ -2,6 +2,14 @@
 
 This is my personal skeleton for flask projects.
 
+Download and unpack.
+Change to folder and do:
+
+	vagrant up
+
+Login to box:
+
+	vagrant ssh
 
 Start:
 
