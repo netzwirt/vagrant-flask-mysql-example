@@ -2,7 +2,9 @@
 
 from flask import render_template, redirect
 import os
-from app import app
+import datetime
+from app import app, db
+from app.models import Message
 from app.forms import CommentForm
 
 
@@ -17,6 +19,12 @@ def comment():
     
     form = CommentForm()
     if form.validate_on_submit():
+        
+        # save the data
+        m = Message( email=form.email.data, message=form.message.data, date=datetime.date.today())
+        db.session.add(m)
+        db.session.commit()
+        
         return redirect('/messages')
         
     return render_template('forms/comment.html', action='/comment', form=form)
