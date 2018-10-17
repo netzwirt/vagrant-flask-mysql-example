@@ -33,7 +33,9 @@ def comment():
 @app.route("/messages")
 def messages():
     
-    return render_template('config.html', config=app.config.items(),configclass=os.environ['APP_SETTINGS'] )
+    messages = Message.query.all()
+    
+    return render_template('messages.html', messages=messages )
         
 
 
